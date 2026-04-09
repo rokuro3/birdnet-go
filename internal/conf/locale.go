@@ -131,7 +131,7 @@ var LocaleCodes = map[string]string{
 
 // defaultUILocales is the fallback list of valid UI locales, matching the frontend message files.
 // This is used when DiscoverUILocales has not been called or fails.
-var defaultUILocales = []string{"de", "en", "es", "fi", "fr", "it", "nl", "pl", "pt", "sk"}
+var defaultUILocales = []string{"de", "en", "es", "fi", "fr", "it", "ja", "nl", "pl", "pt", "sk"}
 
 // validUILocales holds the currently active set of valid UI locale codes.
 // It is initialized to defaultUILocales and can be overridden by SetValidUILocales.
