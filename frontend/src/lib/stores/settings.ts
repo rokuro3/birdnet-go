@@ -1178,6 +1178,16 @@ export const settingsActions = {
         originalData: JSON.parse(JSON.stringify(coercedData)),
         isLoading: false,
       }));
+
+      // Keep i18n locale in sync with backend settings after initial load.
+      const loadedLocale = coercedData.realtime?.dashboard?.locale;
+      if (loadedLocale) {
+        const { getLocale, setLocale, isValidLocale } = await import('$lib/i18n/index.js');
+        const currentLocale = getLocale();
+        if (loadedLocale !== currentLocale && isValidLocale(loadedLocale)) {
+          setLocale(loadedLocale);
+        }
+      }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : t('settings.errors.loadFailed');
       settingsStore.update(state => ({
