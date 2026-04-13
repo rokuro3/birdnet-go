@@ -3,6 +3,7 @@ import { get } from 'svelte/store';
 import { settingsStore, settingsActions } from './settings';
 import type { BirdNetSettings, RealtimeSettings, SettingsFormData } from './settings';
 import { settingsAPI } from '$lib/utils/settingsApi.js';
+import { getLocale, isValidLocale, setLocale } from '$lib/i18n/index.js';
 
 // Mock the settings API
 vi.mock('$lib/utils/settingsApi.js', () => ({
@@ -449,5 +450,83 @@ describe('Settings Store - Model/Label Path Null Conversion', () => {
         }),
       })
     );
+  });
+});
+
+describe('Settings Store - UI Locale Sync on Load', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('should set i18n locale from loaded settings when valid and different', async () => {
+    vi.mocked(settingsAPI.load).mockResolvedValue({
+      realtime: {
+        dashboard: {
+          thumbnails: {
+            summary: true,
+            recent: true,
+            imageProvider: 'avicommons',
+            fallbackPolicy: 'none',
+          },
+          summaryLimit: 30,
+          locale: 'ja',
+        },
+      },
+    } as SettingsFormData);
+
+    vi.mocked(getLocale).mockReturnValue('en');
+    vi.mocked(isValidLocale).mockReturnValue(true);
+
+    await settingsActions.loadSettings();
+
+    expect(setLocale).toHaveBeenCalledWith('ja');
+  });
+
+  it('should not set i18n locale when loaded locale matches current locale', async () => {
+    vi.mocked(settingsAPI.load).mockResolvedValue({
+      realtime: {
+        dashboard: {
+          thumbnails: {
+            summary: true,
+            recent: true,
+            imageProvider: 'avicommons',
+            fallbackPolicy: 'none',
+          },
+          summaryLimit: 30,
+          locale: 'ja',
+        },
+      },
+    } as SettingsFormData);
+
+    vi.mocked(getLocale).mockReturnValue('ja');
+    vi.mocked(isValidLocale).mockReturnValue(true);
+
+    await settingsActions.loadSettings();
+
+    expect(setLocale).not.toHaveBeenCalled();
+  });
+
+  it('should not set i18n locale when loaded locale is invalid', async () => {
+    vi.mocked(settingsAPI.load).mockResolvedValue({
+      realtime: {
+        dashboard: {
+          thumbnails: {
+            summary: true,
+            recent: true,
+            imageProvider: 'avicommons',
+            fallbackPolicy: 'none',
+          },
+          summaryLimit: 30,
+          locale: 'xx',
+        },
+      },
+    } as SettingsFormData);
+
+    vi.mocked(getLocale).mockReturnValue('en');
+    vi.mocked(isValidLocale).mockReturnValue(false);
+
+    await settingsActions.loadSettings();
+
+    expect(setLocale).not.toHaveBeenCalled();
   });
 });

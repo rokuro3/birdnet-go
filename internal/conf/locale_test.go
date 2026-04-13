@@ -56,7 +56,7 @@ func TestDiscoverUILocales(t *testing.T) {
 			name: "falls back to defaults when messages dir missing",
 			fs:   fstest.MapFS{},
 			expected: []string{
-				"de", "en", "es", "fi", "fr", "it", "ja", "nl", "pl", "pt", "sk",
+				"da", "de", "en", "es", "fi", "fr", "hu", "it", "ja", "lv", "nl", "pl", "pt", "sk", "sv",
 			},
 		},
 		{
@@ -104,8 +104,12 @@ func TestValidUILocalesDefault(t *testing.T) {
 	locales := ValidUILocales()
 	assert.Contains(t, locales, "en")
 	assert.Contains(t, locales, "sk")
+	assert.Contains(t, locales, "sv")
 	assert.Contains(t, locales, "it")
+	assert.Contains(t, locales, "hu")
 	assert.Contains(t, locales, "ja")
+	assert.Contains(t, locales, "da")
+	assert.Contains(t, locales, "lv")
 	assert.Contains(t, locales, "nl")
 	assert.Contains(t, locales, "pl")
 }
